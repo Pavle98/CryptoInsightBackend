@@ -10,10 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -21,7 +23,7 @@ public class EtherscanApiService {
     private final String ETHERSCAN_KEY = "MF9DENG9WDWVW5ABXNBGUNS4BU1Q9P1C7K";
     private final  String BASE_URL = "https://api.etherscan.io/";
     private final String INFURA_URL = "https://mainnet.infura.io/v3/7e89b90ac2cb4ef6ae5d95bca69574da";
-
+    private final HashMap<String, String> methodIDs = new HashMap<>();
     private final String USDT_CONTRACT_ADDRESS = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
     private final RestTemplate restTemplate;
 
@@ -29,7 +31,27 @@ public class EtherscanApiService {
     public EtherscanApiService() {
         this.restTemplate = new RestTemplate();
     }
+    @PostConstruct
+    public void init() {
+        methodIDs.put("0x88316456", "mint((address,address,uint24,int24,int24,uint256,uint256,uint256,uint256,address,uint256))");
+        methodIDs.put("0x791ac947", "swapExactTokensForETHSupportingFeeOnTransferTokens(uint256,address[],address,uint256)");
+        methodIDs.put("0x9ac84414", "sweepEth()");
+        methodIDs.put("0x78e111f6", "executeFFsYo(address,bytes)");
+        methodIDs.put("0xb6f9de95", "swapExactETHForTokensSupportingFeeOnTransferTokens(uint256,address[],address,uint256)");
+        methodIDs.put("0x18160ddd", "totalSupply()");
+        methodIDs.put("0x70a08231", "balanceOf(address)");
+        methodIDs.put("0xa9059cbb", "transfer(address,uint256)");
+        methodIDs.put("0x24856bc3", "execute(bytes,bytes[])");
+        methodIDs.put("0x3593564c", "execute(bytes,bytes[],uint256)");
+        methodIDs.put("0x23b872dd", "transferFrom(address,address,uint256)");
+        methodIDs.put("0x095ea7b3", "approve(address,uint256)");
+        methodIDs.put("0xdd62ed3e", "allowance(address,address)");
+        methodIDs.put("0x7ff36ab5", "swapExactETHForTokens(uint256,address[],address,uint256)");
+        methodIDs.put("0xd9627aa4", "sellToUniswap(address[],uint256,uint256,bool)\t");
+        methodIDs.put("0xfb3bdb41", "swapETHForExactTokens(uint256,address[],address,uint256)");
+        methodIDs.put("0x0502b1c5", "unoswap(address,uint256,uint256,uint256[])");
 
+    }
     public EthereumBalanceAndUsdValueDto getBalance(String address) {
         String url = BASE_URL + "api?module=account&action=balance&address=" + address + "&tag=latest&apikey=" + ETHERSCAN_KEY;
         if (!address.matches("^0x[a-fA-F0-9]{40}$")) {
@@ -141,7 +163,6 @@ public class EtherscanApiService {
         for(EthereumTransactionDto transaction : transactions){
             double convertedValue = formatEthValue(transaction.getValue());
             transaction.setValue(String.valueOf(convertedValue));
-
             long timeStampLong = Long.parseLong(transaction.getTimeStamp());
             transaction.setTimeStamp(convertTimestampToDate(timeStampLong));
         }
@@ -215,11 +236,20 @@ public class EtherscanApiService {
             transaction.setTimeStamp(convertHexToDecimal(response.getResult().getTimestamp()));
             long timeStampLong = Long.parseLong(transaction.getTimeStamp());
             transaction.setTimeStamp(convertTimestampToDate(timeStampLong));
-
             String convertedHexValue = convertHexToDecimal(transaction.getValue());
             String convertedDecimalValue = String.valueOf(formatEthValue(convertedHexValue));
             transaction.setValue(convertedDecimalValue);
-            transaction.setMethodId("/");
+            if(transaction.getInput().equals("0x")){
+                transaction.setMethodId("0x");
+                transaction.setFunctionName("");
+            }else{
+                transaction.setMethodId(transaction.getInput().substring(0,10));
+                if(methodIDs.containsKey(transaction.getMethodId())){
+                    transaction.setFunctionName(methodIDs.get(transaction.getMethodId()));
+                }else{
+                    System.out.println(transaction.getMethodId());
+                }
+            }
         }
         return latestTransactions;
     }
