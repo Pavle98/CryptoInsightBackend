@@ -132,7 +132,7 @@ public class EtherscanApiService {
         System.out.println("we in normal trans");
         System.out.println(startBlock +" "+ endBlock);
         String url = BASE_URL + "api?module=account&action=txlist&address=" + address +
-                "&startblock=" + startBlock + "&endblock=" + endBlock + "&sort=asc" + "&apikey=" + ETHERSCAN_KEY;
+                "&startblock=" + startBlock + "&endblock=" + endBlock + "&sort=desc" + "&apikey=" + ETHERSCAN_KEY;
         ResponseEntity<EthereumTransactionsResponseDto> responseEntity = restTemplate.getForEntity(url, EthereumTransactionsResponseDto.class);
         EthereumTransactionsResponseDto response = responseEntity.getBody();
 
@@ -151,7 +151,7 @@ public class EtherscanApiService {
 
     public List<EthereumTransactionDto> getInternalTransactions(String address, String startBlock, String endBlock) {
         String url = BASE_URL + "api?module=account&action=txlistinternal&address=" + address +
-                "&startblock=" + startBlock + "&endblock=" + endBlock + "&sort=asc" + "&apikey=" + ETHERSCAN_KEY;
+                "&startblock=" + startBlock + "&endblock=" + endBlock + "&sort=desc" + "&apikey=" + ETHERSCAN_KEY;
         ResponseEntity<EthereumTransactionsResponseDto> responseEntity = restTemplate.getForEntity(url, EthereumTransactionsResponseDto.class);
         EthereumTransactionsResponseDto response = responseEntity.getBody();
         List<EthereumTransactionDto> transactions = response.getResult();
@@ -179,7 +179,7 @@ public class EtherscanApiService {
     public List<UsdtTransactionDto> getUsdtTransactions(String address, String startBlock, String endBlock) {
         String url = BASE_URL + "api?module=account&action=tokentx&address=" + address
                 + "&contractaddress=" + USDT_CONTRACT_ADDRESS +
-                "&startblock=" + startBlock + "&endblock=" + endBlock + "&sort=asc" + "&apikey=" + ETHERSCAN_KEY;
+                "&startblock=" + startBlock + "&endblock=" + endBlock + "&sort=desc" + "&apikey=" + ETHERSCAN_KEY;
         ResponseEntity<UsdtTransactionsResponseDto> responseEntity = restTemplate.getForEntity(url, UsdtTransactionsResponseDto.class);
         UsdtTransactionsResponseDto response = responseEntity.getBody();
         List<UsdtTransactionDto> transactions = response.getResult();
@@ -194,7 +194,7 @@ public class EtherscanApiService {
     }
     public List<GetAllTokenTransactionDto> getAllTokenTransactions(String address, String startBlock, String endBlock) {
         String url = BASE_URL + "api?module=account&action=tokentx&address=" + address +
-                "&startblock=" + startBlock + "&endblock=" + endBlock + "&sort=asc" + "&apikey=" + ETHERSCAN_KEY;
+                "&startblock=" + startBlock + "&endblock=" + endBlock + "&sort=desc" + "&apikey=" + ETHERSCAN_KEY;
         ResponseEntity<GetAllTokenTransactionsResponseDto> responseEntity = restTemplate.getForEntity(url, GetAllTokenTransactionsResponseDto.class);
         GetAllTokenTransactionsResponseDto response = responseEntity.getBody();
         List<GetAllTokenTransactionDto> transactions = response.getResult();
@@ -219,6 +219,7 @@ public class EtherscanApiService {
             String convertedHexValue = convertHexToDecimal(transaction.getValue());
             String convertedDecimalValue = String.valueOf(formatEthValue(convertedHexValue));
             transaction.setValue(convertedDecimalValue);
+            transaction.setMethodId("/");
         }
         return latestTransactions;
     }
