@@ -46,7 +46,7 @@ public class UserService {
             System.out.println(ResponseEntity.badRequest().body("Password is incorrect"));
             return ResponseEntity.badRequest().body("Password is incorrect");
         }
-        return ResponseEntity.ok("");
+        return ResponseEntity.ok(userDto);
     }
 
 

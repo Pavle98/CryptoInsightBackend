@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class CryptoInsightApplication {
 
 	public static void main(String[] args) {
-		System.out.println("dzoni help me");
 		SpringApplication.run(CryptoInsightApplication.class, args);
 	}
 

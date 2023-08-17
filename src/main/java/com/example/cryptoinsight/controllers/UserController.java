@@ -23,20 +23,20 @@ public class UserController {
         this.userService = userService;
     }
 
-    @CrossOrigin
+     @CrossOrigin(origins = {"https://cryptoinsight-frontend-8ec4c0098af9.herokuapp.com/", "http://localhost:8081"})
     @PostMapping("/users/register")
     public ResponseEntity registerUser(@RequestBody UserDto userDto) {
         logger.info("Registering user with username: " + userDto.getUsername());
-        userService.registerUser(userDto);
-        return ResponseEntity.ok(userDto);
+
+        return userService.registerUser(userDto);
       }
 
-    @CrossOrigin
+     @CrossOrigin(origins = {"https://cryptoinsight-frontend-8ec4c0098af9.herokuapp.com/", "http://localhost:8081"})
     @PostMapping("/users/login")
     public ResponseEntity logUser(@RequestBody UserDto userDto) {
         logger.info("Logging user with username: " + userDto.getUsername());
-        userService.logUser(userDto);
-        return ResponseEntity.ok(userDto);
+
+        return  userService.logUser(userDto);
     }
 
 

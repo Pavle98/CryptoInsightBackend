@@ -50,7 +50,6 @@ public class EtherscanApiService {
         methodIDs.put("0xd9627aa4", "sellToUniswap(address[],uint256,uint256,bool)\t");
         methodIDs.put("0xfb3bdb41", "swapETHForExactTokens(uint256,address[],address,uint256)");
         methodIDs.put("0x0502b1c5", "unoswap(address,uint256,uint256,uint256[])");
-
     }
     public EthereumBalanceAndUsdValueDto getBalance(String address) {
         String url = BASE_URL + "api?module=account&action=balance&address=" + address + "&tag=latest&apikey=" + ETHERSCAN_KEY;
@@ -241,13 +240,15 @@ public class EtherscanApiService {
             transaction.setValue(convertedDecimalValue);
             if(transaction.getInput().equals("0x")){
                 transaction.setMethodId("0x");
-                transaction.setFunctionName("");
+                transaction.setFunctionName("P2P exchange");
             }else{
-                transaction.setMethodId(transaction.getInput().substring(0,10));
+                try {
+                    transaction.setMethodId(transaction.getInput().substring(0, 10));
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
                 if(methodIDs.containsKey(transaction.getMethodId())){
                     transaction.setFunctionName(methodIDs.get(transaction.getMethodId()));
-                }else{
-                    System.out.println(transaction.getMethodId());
                 }
             }
         }
