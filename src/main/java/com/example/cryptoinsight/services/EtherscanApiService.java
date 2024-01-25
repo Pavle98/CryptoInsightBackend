@@ -3,6 +3,7 @@ package com.example.cryptoinsight.services;
 import com.example.cryptoinsight.dto.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,9 +21,12 @@ import java.util.List;
 
 @Service
 public class EtherscanApiService {
-    private final String ETHERSCAN_KEY = "MF9DENG9WDWVW5ABXNBGUNS4BU1Q9P1C7K";
+
     private final  String BASE_URL = "https://api.etherscan.io/";
-    private final String INFURA_URL = "https://mainnet.infura.io/v3/7e89b90ac2cb4ef6ae5d95bca69574da";
+    @Value("${ETHERSCAN_KEY}")
+    private String ETHERSCAN_KEY;
+    @Value("${INFURA_URL}")
+    private  String INFURA_URL;
     private final HashMap<String, String> methodIDs = new HashMap<>();
     private final String USDT_CONTRACT_ADDRESS = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
     private final RestTemplate restTemplate;
